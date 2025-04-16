@@ -1,7 +1,10 @@
-import postgres from 'postgres'
+import { createClient } from "@supabase/supabase-js";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const connectionString = process.env.DATABASE_URL
-const sql = postgres(connectionString)
-console.log('Connected to PostgreSQL database', connectionString)
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY; // Use service role key for server-side
 
-export default sql
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export default supabase;

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import mainRouter from './routes/index.js'; // Assuming you have a central router
-//import { errorHandler } from './middleware/errorMiddleware.js'; // Error handler
+import errorHandler from './middleware/errorMiddleware.js'; // Error handler
 
 // Load environment variables
 dotenv.config();
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', mainRouter);
 
 // Error handling middleware (should be last)
-//app.use(errorHandler);
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 3001;

@@ -1,18 +1,31 @@
-// api/users/users.controller.js
-
-import sql from '../../lib/supabaseClient.js';
+import bcrypt from 'bcrypt';
+import supabase from '../../lib/supabaseClient.js';
 
 // Create a new user
 export const createUser = async (name, email, password) => {
     try {
-        const result = await sql`
-            INSERT INTO users (name, email, password)
-            VALUES (${name}, ${email}, ${password})
-            RETURNING *;
-        `;
-        return result[0];
+        // Hash the password before storing
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const { data, error } = await supabase
+            .from('users')
+            .insert([
+                {
+                    name,
+                    email,
+                    password_hash: hashedPassword
+                }
+            ])
+            .select(); // returns inserted data
+
+        if (error) {
+            console.error('Error inserting user:', error.message);
+            throw error;
+        }
+
+        return data[0];
     } catch (error) {
-        console.error('Error creating user:', error);
+        console.error('Error creating user:', error.message);
         throw error;
     }
 };
@@ -20,12 +33,15 @@ export const createUser = async (name, email, password) => {
 // Get all users
 export const getUsers = async () => {
     try {
-        const result = await sql`
-            SELECT * FROM users;
-        `;
-        return result;
+        const { data, error } = await supabase
+            .from('users')
+            .select('*');
+
+        if (error) throw error;
+
+        return data;
     } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error.message);
         throw error;
     }
 };
@@ -33,12 +49,17 @@ export const getUsers = async () => {
 // Get user by ID
 export const getUserById = async (id) => {
     try {
-        const result = await sql`
-            SELECT * FROM users WHERE id = ${id};
-        `;
-        return result[0];
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+
+        return data;
     } catch (error) {
-        console.error('Error fetching user by ID:', error);
+        console.error('Error fetching user by ID:', error.message);
         throw error;
     }
 };
