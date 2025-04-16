@@ -1,7 +1,7 @@
 // api/encryption/encryption.routes.js
 
 import express from 'express';
-import { createEncryptionKey, getEncryptionKeys } from './encryption.controller.js';
+import { createEncryptionKey, getDecryptedEncryptionKeys } from './encryption.controller.js';
 import authenticate from '../../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const router = express.Router();
 // Route to get all encryption keys
 router.get('/', authenticate, async (req, res) => {
     try {
-        const keys = await getEncryptionKeys();
+        const keys = await getDecryptedEncryptionKeys();
         res.json(keys);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch encryption keys' });
