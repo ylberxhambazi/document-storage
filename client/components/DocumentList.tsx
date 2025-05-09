@@ -1,23 +1,28 @@
-'use client';
+'use client'
 
-import { useGetDocumentsQuery } from "@/lib/documentApiSlice";
+import { useGetDocumentsQuery } from '@/lib/documentApiSlice'
+import DocumentCard from './cards/DocumentCard'
 
 export default function DocumentList() {
-    const { data: documents, isLoading, error } = useGetDocumentsQuery();
+    const { data: documents, isLoading, isError } = useGetDocumentsQuery()
 
-    if (isLoading) return <p>Loading documents...</p>;
-    if (error) return <p>Failed to load documents.</p>;
+    if (isLoading) {
+        return <div>{'Loading documents...'}</div>
+    }
+
+    if (isError) {
+        return <div>{'Failed to load documents.'}</div>
+    }
+
+    if (!documents || documents.length === 0) {
+        return <div className='text-center text-gray-500'>{'No documents found. Try uploading one!'}</div>
+    }
 
     return (
-        <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-semibold">Your Documents</h2>
-            <ul className="list-disc pl-6">
-                {documents?.map((doc) => (
-                    <li key={doc.id}>
-                        <span className="font-bold">{doc.filename}</span>
-                    </li>
-                ))}
-            </ul>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            {documents.map(document => (
+                <DocumentCard key={document.id} document={document} />
+            ))}
         </div>
-    );
+    )
 }

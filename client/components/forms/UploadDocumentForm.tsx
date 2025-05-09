@@ -6,10 +6,12 @@ import * as yup from 'yup'
 import { toast } from 'react-toastify'
 import { useUploadDocumentMutation } from '@/lib/documentApiSlice'
 import { TUploadDocumentRequest } from '@/types/request/document'
+import getUserFromToken from '@/lib/getUserFromToken'
 
 const uploadSchema = yup.object().shape({
   title: yup.string().required('Title is required'),
   content: yup.string().required('Content is required'),
+  userId: yup.number().required('User ID is required')
 })
 
 const UploadDocumentForm = () => {
@@ -20,8 +22,14 @@ const UploadDocumentForm = () => {
   const [uploadDocument, { isLoading }] = useUploadDocumentMutation()
 
   const onSubmit = async (data: TUploadDocumentRequest) => {
+    const user = getUserFromToken()
+    if (!user) {
+      toast.error('User not authenticated')
+      return
+    }
     try {
-      await uploadDocument(data).unwrap()
+      const payload = { ...data, userId: user.userId }
+      await uploadDocument(payload).unwrap()
       toast.success('Document uploaded!')
       reset()
     } catch {

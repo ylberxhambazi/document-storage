@@ -1,6 +1,7 @@
 'use client'
 
 import useAuth from '@/hooks/useAuth'
+import getUserFromToken from '@/lib/getUserFromToken'
 import cn from '@/util/cn'
 import { useEffect, useState } from 'react'
 
@@ -10,10 +11,11 @@ const Navbar = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token')
-        if (token) {
+        const user = getUserFromToken()
+        if (token && user) {
             // For now, just simulate "logged in"
             // Later you can decode JWT and get real email if needed
-            setUserEmail('User')
+            setUserEmail(user.email)
         }
     }, [])
 
