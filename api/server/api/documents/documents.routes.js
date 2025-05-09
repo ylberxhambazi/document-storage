@@ -1,10 +1,12 @@
 // api/documents/documents.routes.js
 
 import express from 'express';
+import multer from 'multer';
 import { createDocument, getDocuments, getDocumentById } from './documents.controller.js';
 import authenticate from '../../middleware/authMiddleware.js';
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() })
 
 // Route to get all documents
 router.get('/', authenticate, async (req, res) => {
